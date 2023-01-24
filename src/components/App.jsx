@@ -1,54 +1,41 @@
-import React from 'react';
 import { FeedbackOptions } from './FedbackOptons/FeedbackOptons';
 import { Statistics } from './Statistics/Statistics';
 import { Section } from './Section/Section';
 import { Notification } from './Notification/Notification';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
+import {  useState } from 'react';
 
-export class App extends React.Component {
-  static defaultProps = {
-    initialGood: 0,
-    initialNeutral: 0,
-    initialBad: 0,
-  };
-  static propTypes = {
-    initialGood: PropTypes.number.isRequired,
-    initialNeutral: PropTypes.number.isRequired,
-    initialBad: PropTypes.number.isRequired,
-  };
-  state = {
-    good: this.props.initialGood,
-    neutral: this.props.initialNeutral,
-    bad: this.props.initialBad,
-  };
+export function App () {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
-  handleIncrement = option => {
-    this.setState(prevState => ({
-      [option]: prevState[option] + 1,
-    }));
-  };
+  const handleIncrement = feedback => {
+    switch (feedback) {
+      case 'good':
+        setGood(state => state + 1);
+        break;
+      case 'neutral':
+        setNeutral(state => state + 1);
+        break;
+      case 'bad':
+        setBad(state => state + 1);
+        break;
+      default:
+        return
+    }
+  }
+    
+    const total = bad + neutral + good;
+    const positivePercentage = Math.ceil((good / total) * 100);
+    const options = Object.keys({good, neutral, bad});
 
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    return bad + neutral + good;
-  };
-
-  countPositiveFeedbackPercentage = () => {
-    const total = this.countTotalFeedback();
-    return Math.ceil((this.state.good / total) * 100);
-  };
-
-  render() {
-    const { good, neutral, bad } = this.state;
-    const total = this.countTotalFeedback();
-    const positivePercentage = this.countPositiveFeedbackPercentage();
-    const options = Object.keys(this.state);
-    return (
+  return (
       <>
         <Section title="Please leave feedback">
           <FeedbackOptions
             options={options}
-            onLeaveFeedback={this.handleIncrement}
+            onLeaveFeedback={handleIncrement}
           ></FeedbackOptions>
         </Section>
 
@@ -67,5 +54,5 @@ export class App extends React.Component {
         )}
       </>
     );
-  }
+  
 }
